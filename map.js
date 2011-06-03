@@ -1,4 +1,4 @@
-GRID_SIZE = 15
+var GRID_SIZE = 15
 
 function Node(x,y){
 	this.x = x || 0.0;
@@ -57,7 +57,7 @@ function Map(w,h) {
 	};
 }
 
-diag_adj = function(node){
+var diag_adj = function(node){
 	var out = [];
 	var a = [[-1,-1],[0,-1],[1,-1],
 			 [-1, 0],       [1, 0],

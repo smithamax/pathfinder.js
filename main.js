@@ -11,25 +11,28 @@ window.requestAnimFrame = (function(){
 
 
 
-canvas = document.createElement('canvas');
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight-16
-document.body.appendChild(canvas);
-ctx = canvas.getContext('2d');
+var can = document.createElement('canvas');
+can.width = window.innerWidth
+can.height = window.innerHeight-16
+document.body.appendChild(can);
+var ctx = can.getContext('2d');
 
 var start, goal, path = [];
 var map = new Map(140,80)
 var pather = new PathFinder({adj:diag_adj})
 
-canvas.addEventListener("click",function(e){
-	cx = Math.floor(e.offsetX/GRID_SIZE)
-	cy = Math.floor(e.offsetY/GRID_SIZE)
+
+var clicky = function(e){
+	var cx = Math.floor(e.offsetX/GRID_SIZE)
+	var cy = Math.floor(e.offsetY/GRID_SIZE)
 	start = goal;
 	goal = map.nodeAt(cx,cy)
 	if(start){
 		path = pather.findpath(start, goal)
 	}
-})
+}
+
+can.addEventListener("click",clicky,false)
 
 map.randomiz()
 
