@@ -16,15 +16,17 @@ function PathFinder(options){
 	PathNode = function(node, parent){
 		this.parent = parent;
 		this.node = node;
+		var _g = this.g = null;
 
 		this.F = function(goal){
-			return this.G() + this.H(goal);
+			return this.g + this.H(goal);
 		};
 		this.G = function(){
+			if(_g) {return _g;}
 			if (this.parent === undefined){
-				return 0;
+				return _g = 0;
 			}else{
-				return this.parent.G() + this.node.distance(this.parent.node);
+				return _g = this.parent.G() + this.node.distance(this.parent.node);
 			}
 		};
 		this.H = function(goal){
@@ -38,6 +40,10 @@ function PathFinder(options){
 				path.push(this.node);
 				return path;
 			}
+		};
+		this.reParent = function(parent){
+			this.parent = parent;
+			_g = this.G();
 		};
 		this.adj = adjnodesf || function(){return this.node.ajacent();};
 	};
@@ -85,7 +91,7 @@ PathFinder.prototype.findpath = function(start, goal){
 					old = oents[0];
 					nuw = new PathNode(adj[n], current);
 					if(old.G() > nuw.G()){
-						old.parent = current;
+						old.reParent(current);
 					}
 				}else{
 					nOpen(new PathNode(adj[n], current));
