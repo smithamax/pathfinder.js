@@ -43,13 +43,10 @@ map.randomiz()
 
 function loopsy(){
 	map.draw(ctx);
-	for (var i = 0; i < path.length; i++) {
-		path[i].draw(ctx,'green')
-	};
-	ctx.beginPath();
 	ctx.strokeStyle = 'red';
-	ctx.lineWidth = 3.0;
+	ctx.lineWidth = 5.0;
 	ctx.lineCap = 'round'
+	ctx.beginPath();
 	for (var i = 0; i < pather.lastclist.length; i++) {
 		var a = pather.lastclist[i].node
 		var b = pather.lastclist[i].parent
@@ -60,7 +57,14 @@ function loopsy(){
 		}
 	};
 	ctx.stroke()
+	ctx.strokeStyle = 'green';
+	ctx.beginPath();
+	if(path.length)
+		ctx.moveTo((path[0].x+0.5)*GRID_SIZE,(path[0].y+0.5)*GRID_SIZE)
+	for (var i = 0; i < path.length; i++) {
+		ctx.lineTo((path[i].x+0.5)*GRID_SIZE,(path[i].y+0.5)*GRID_SIZE)
+	};
+	ctx.stroke()
 	requestAnimFrame(loopsy)
 }
 loopsy()
-
