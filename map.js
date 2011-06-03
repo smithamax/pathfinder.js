@@ -57,7 +57,7 @@ function Map(w,h) {
 	};
 }
 
-diagadj = function(node){
+diag_adj = function(node){
 	var out = [];
 	var a = [[-1,-1],[0,-1],[1,-1],
 			 [-1, 0],       [1, 0],

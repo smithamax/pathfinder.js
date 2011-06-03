@@ -26,7 +26,7 @@ ctx = canvas.getContext('2d');
 
 var start, goal, path = [];
 var map = new Map(140,80)
-var pather = new PathFinder({adj:diagadj})
+var pather = new PathFinder({adj:diag_adj})
 
 canvas.addEventListener("click",function(e){
 	cx = Math.floor(e.offsetX/GRID_SIZE)
