@@ -9,34 +9,39 @@ window.requestAnimFrame = (function(){
 			};
 })();
 
-
-
-var can = document.createElement('canvas');
-can.width = window.innerWidth
-can.height = window.innerHeight-16
-document.body.appendChild(can);
-var ctx = can.getContext('2d');
-
 var start, goal, path = [];
 var map = new Map(140,80)
 var pather = new PathFinder({adj:diag_adj})
+var can , ctx;
+
+function init () {
+	can = document.createElement('canvas');
+	can.width = window.innerWidth
+	can.height = window.innerHeight-16
+	document.body.appendChild(can);
+	ctx = can.getContext('2d');
+
+	can.addEventListener('click',clicky,false);
+
+	map.randomiz()
+
+	loopsy()
+}
 
 
 var clicky = function(e){
-	var cx = Math.floor(e.offsetX/GRID_SIZE)
-	var cy = Math.floor(e.offsetY/GRID_SIZE)
+	var cx = Math.floor(e.clientX/GRID_SIZE) //needs to be fixed to offsetX equiv
+	var cy = Math.floor(e.clientY/GRID_SIZE)
 	start = goal;
 	goal = map.nodeAt(cx,cy)
-	if(start){
+	if(window.start){
+		//console.time('wooo')
 		path = pather.findpath(start, goal)
+		//console.timeEnd('wooo')
 	}
 }
 
-can.addEventListener("click",clicky,false)
-
-map.randomiz()
-
-function loopsy(){
+var loopsy = function(){
 	map.draw(ctx);
 	ctx.strokeStyle = 'red';
 	ctx.lineWidth = 5.0;
@@ -62,4 +67,5 @@ function loopsy(){
 	ctx.stroke()
 	requestAnimFrame(loopsy)
 }
-loopsy()
+window.onload = init;
+

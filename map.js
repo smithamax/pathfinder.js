@@ -32,30 +32,31 @@ function Map(w,h) {
 			this.grid[i][j] = new Node(i,j)
 		};
 	};
-	this.nodeAt = function(x,y){
-		if (0<=x && x < this.width &&
-				0<=y && y < this.height){
-			return this.grid[x][y];	
-		}else{
-			return null;
-		}
-	}
-	this.draw = function(ctx) {
-		for (var i = 0; i < this.grid.length; i++) {
-			for (var j = 0; j < this.grid[i].length; j++) {
-				this.grid[i][j].draw(ctx);
-			};
-		};
-	};
-	this.randomiz = function() {
-		for (var i = 0; i < this.width; i++) {
-			for (var j = 0; j < this.height; j++) {
-
-				this.grid[i][j].walkable = Math.round(Math.random()) == true
-			};
-		};
-	};
 }
+
+Map.prototype.nodeAt = function(x,y){
+	if (0<=x && x < this.width &&
+			0<=y && y < this.height){
+		return this.grid[x][y];	
+	}else{
+		return null;
+	}
+}
+Map.prototype.draw = function(ctx) {
+	for (var i = 0; i < this.grid.length; i++) {
+		for (var j = 0; j < this.grid[i].length; j++) {
+			this.grid[i][j].draw(ctx);
+		};
+	};
+};
+Map.prototype.randomiz = function() {
+	for (var i = 0; i < this.width; i++) {
+		for (var j = 0; j < this.height; j++) {
+
+			this.grid[i][j].walkable = Math.round(Math.random()) == true
+		};
+	};
+};
 
 var diag_adj = function(node){
 	var out = [];
