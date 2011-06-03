@@ -1,10 +1,3 @@
-window.log = function(){
-  log.history = log.history || [];   // store logs to an array for reference
-  log.history.push(arguments);
-  arguments.callee = arguments.callee.caller;  
-  if(this.console) console.log( Array.prototype.slice.call(arguments) );
-};
-
 window.requestAnimFrame = (function(){
 	return	window.requestAnimationFrame       || 
 			window.webkitRequestAnimationFrame || 
@@ -19,14 +12,14 @@ window.requestAnimFrame = (function(){
 
 
 canvas = document.createElement('canvas');
-canvas.width = window.innerWidth-2
-canvas.height = window.innerHeight-2
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight-16
 document.body.appendChild(canvas);
 ctx = canvas.getContext('2d');
 
 var start, goal, path = [];
 var map = new Map(140,80)
-var pather = new PathFinder({adj:diagadj})
+var pather = new PathFinder({adj:diag_adj})
 
 canvas.addEventListener("click",function(e){
 	cx = Math.floor(e.offsetX/GRID_SIZE)
@@ -35,7 +28,6 @@ canvas.addEventListener("click",function(e){
 	goal = map.nodeAt(cx,cy)
 	if(start){
 		path = pather.findpath(start, goal)
-		console.log(path)
 	}
 })
 
@@ -43,13 +35,10 @@ map.randomiz()
 
 function loopsy(){
 	map.draw(ctx);
-	for (var i = 0; i < path.length; i++) {
-		path[i].draw(ctx,'green')
-	};
-	ctx.beginPath();
 	ctx.strokeStyle = 'red';
-	ctx.lineWidth = 3.0;
+	ctx.lineWidth = 5.0;
 	ctx.lineCap = 'round'
+	ctx.beginPath();
 	for (var i = 0; i < pather.lastclist.length; i++) {
 		var a = pather.lastclist[i].node
 		var b = pather.lastclist[i].parent
@@ -58,6 +47,14 @@ function loopsy(){
 			ctx.moveTo((a.x+0.5)*GRID_SIZE,(a.y+0.5)*GRID_SIZE);
 			ctx.lineTo((b.x+0.5)*GRID_SIZE,(b.y+0.5)*GRID_SIZE);
 		}
+	};
+	ctx.stroke()
+	ctx.strokeStyle = 'green';
+	ctx.beginPath();
+	if(path.length)
+		ctx.moveTo((path[0].x+0.5)*GRID_SIZE,(path[0].y+0.5)*GRID_SIZE)
+	for (var i = 0; i < path.length; i++) {
+		ctx.lineTo((path[i].x+0.5)*GRID_SIZE,(path[i].y+0.5)*GRID_SIZE)
 	};
 	ctx.stroke()
 	requestAnimFrame(loopsy)
