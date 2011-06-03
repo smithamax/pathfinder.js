@@ -1,10 +1,3 @@
-window.log = function(){
-  log.history = log.history || [];   // store logs to an array for reference
-  log.history.push(arguments);
-  arguments.callee = arguments.callee.caller;  
-  if(this.console) console.log( Array.prototype.slice.call(arguments) );
-};
-
 window.requestAnimFrame = (function(){
 	return	window.requestAnimationFrame       || 
 			window.webkitRequestAnimationFrame || 
@@ -19,8 +12,8 @@ window.requestAnimFrame = (function(){
 
 
 canvas = document.createElement('canvas');
-canvas.width = window.innerWidth-2
-canvas.height = window.innerHeight-2
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight-16
 document.body.appendChild(canvas);
 ctx = canvas.getContext('2d');
 
@@ -35,7 +28,6 @@ canvas.addEventListener("click",function(e){
 	goal = map.nodeAt(cx,cy)
 	if(start){
 		path = pather.findpath(start, goal)
-		console.log(path)
 	}
 })
 

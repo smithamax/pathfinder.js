@@ -1,4 +1,4 @@
-GRID_SIZE = 10
+GRID_SIZE = 15
 
 function Node(x,y){
 	this.x = x || 0.0;
