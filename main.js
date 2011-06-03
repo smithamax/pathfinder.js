@@ -42,13 +42,24 @@ canvas.addEventListener("click",function(e){
 map.randomiz()
 
 function loopsy(){
-	map.draw(ctx)
-	for (var i = 0; i < pather.lastclist.length; i++) {
-		pather.lastclist[i].node.draw(ctx,'red')
-	};
+	map.draw(ctx);
 	for (var i = 0; i < path.length; i++) {
 		path[i].draw(ctx,'green')
 	};
+	ctx.beginPath();
+	ctx.strokeStyle = 'red';
+	ctx.lineWidth = 3.0;
+	ctx.lineCap = 'round'
+	for (var i = 0; i < pather.lastclist.length; i++) {
+		var a = pather.lastclist[i].node
+		var b = pather.lastclist[i].parent
+		if(b){
+			b = b.node;
+			ctx.moveTo((a.x+0.5)*GRID_SIZE,(a.y+0.5)*GRID_SIZE);
+			ctx.lineTo((b.x+0.5)*GRID_SIZE,(b.y+0.5)*GRID_SIZE);
+		}
+	};
+	ctx.stroke()
 	requestAnimFrame(loopsy)
 }
 loopsy()
