@@ -10,10 +10,11 @@ window.requestAnimFrame = (function(){
 })();
 
 var start, goal, path = [];
-var map = new Map(140,80)
-var pather = new PathFinder({adj:diag_adj})
-var can , ctx;
-var drawmode = true;
+
+var can , ctx, map, pather;
+var drawmode = false;
+var doLosslessCull = false;
+var doDropNodeCull = false;
 
 function init () {
 	can = document.createElement('canvas');
@@ -23,7 +24,37 @@ function init () {
 	ctx = can.getContext('2d');
 
 	can.addEventListener('click',clicky,false);
-	window.addEventListener('keydown',handleKey)
+	//window.addEventListener('keydown',handleKey,false)
+
+	map = new Map(140,80)
+	pather = new PathFinder({adj:diag_adj})
+
+	var gui = new DAT.GUI();
+
+	// Text field
+	// gui.add(fizzyText, 'message');
+
+	// // Sliders with min + max
+	// gui.add(fizzyText, 'maxSize').min(0.5).max(7);
+	// gui.add(fizzyText, 'growthSpeed').min(0.01).max(1).step(0.05);
+	// gui.add(fizzyText, 'speed', 0.1, 2, 0.05); // shorthand for min/max/step
+
+	// gui.add(fizzyText, 'noiseStrength', 10, 100, 5);
+
+	// Boolean checkbox
+	gui.add(window, 'drawmode');
+	gui.add(window, 'doLosslessCull');
+	gui.add(window, 'doDropNodeCull');
+
+	gui.add(window, 'doLosslessCullNow')
+	gui.add(window, 'doDropNodeCullNow')
+
+
+	// Fires a function called 'explode'
+	// gui.add(fizzyText, 'explode').name('Explode!'); // Specify a custom name.
+
+	// // Alternatively, you can specify custom labels using object syntax
+	//gui.add(obj, 'propertyName').options({'Small': 1, 'Medium': 2, 'Large': 3});
 
 
 	tempmap = Generator.generate(21,21)
@@ -78,10 +109,17 @@ var clicky = function(e){
 	}else{
 		start = goal;
 		goal = map.nodeAt(cx,cy)
-		if(window.start){
+		if(start){
 			console.time('wooo')
 			path = pather.findpath(start, goal)
+			console.log(path)
 			console.timeEnd('wooo')
+			if (doDropNodeCull){
+				path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable})
+			}
+			if (doLosslessCull){
+				path = losslessCull(path)
+			}
 		}
 	}
 }
@@ -91,7 +129,7 @@ function handleKey(e){
 	keynum = e.which;
 
 	if(keyname[keynum] == "SPACE"){
-		drawmode = !drawmode
+		//drawmode = !drawmode
 	}
 }
 
@@ -116,10 +154,19 @@ var loopsy = function(){
 	if(path.length)
 		ctx.moveTo((path[0].x+0.5)*GRID_SIZE,(path[0].y+0.5)*GRID_SIZE)
 	for (var i = 0; i < path.length; i++) {
+		ctx.fillStyle = 'lime';
+		ctx.fillRect(path[i].x*GRID_SIZE,path[i].y*GRID_SIZE,GRID_SIZE,GRID_SIZE);
 		ctx.lineTo((path[i].x+0.5)*GRID_SIZE,(path[i].y+0.5)*GRID_SIZE)
 	};
 	ctx.stroke()
 	requestAnimFrame(loopsy)
+}
+
+function doLosslessCullNow () {
+	path = losslessCull(path);
+}
+function doDropNodeCullNow (){
+	path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable})
 }
 window.onload = init;
 

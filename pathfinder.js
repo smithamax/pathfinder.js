@@ -4,21 +4,19 @@
 //}
 
 function PathFinder(options){
-	var adjnodesf;
+	this.adjFunc;
 	this.lastclist = [];
 
 	if(options.adj){
-		adjnodesf = function(){return options.adj(this.node);};
+		this.adjFunc = options.adj
 	}else{
-		adjnodesf = false;
+		this.adjFunc = function(node){return node.ajacent();};
 	}
 
 	PathNode = function(node, parent){
 		var _g = null;
 		this.parent = parent;
 		this.node = node;
-		this.adj =	adjnodesf || 
-					function(){return this.node.ajacent();};
 
 		this.F = function(goal){
 			return this.G() + this.H(goal);
@@ -95,7 +93,7 @@ PathFinder.prototype.findpath = function(start, goal){
 
 	do{
 		nClose(current);
-		adj = current.adj();
+		adj = this.adjFunc(current.node);
 
 		for(var n in adj){
 			if(!closedlist.some(inList,adj[n])){
