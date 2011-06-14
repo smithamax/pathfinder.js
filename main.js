@@ -73,10 +73,13 @@ function init () {
 var clicky = function(e){
 	var cx = Math.floor(e.clientX/GRID_SIZE) //needs to be fixed to offsetX equiv
 	var cy = Math.floor(e.clientY/GRID_SIZE)
+	var ax = Math.round(dude.pos.x/GRID_SIZE)
+	var ay = Math.round(dude.pos.y/GRID_SIZE)
 	if(drawmode){
 		map.nodeAt(cx,cy).toggle();
 	}else{
-		start = goal;
+		//start = goal;
+		start = map.nodeAt(ax,ay)
 		goal = map.nodeAt(cx,cy)
 		if(start){
 			console.time('wooo')
