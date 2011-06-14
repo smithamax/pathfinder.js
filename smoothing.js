@@ -1,5 +1,4 @@
 function losslessCull(nodelist){
-	console.log('cull');
 	var outlist = [];
 	var node, lastnode, dx, dy, ldx, ldy;
 
@@ -29,16 +28,14 @@ function dropNodeCull (nodelist, goodNode) {
 	var snode, mnode, lnode, testpoints, hit;
 
 	snode = nodelist.shift()
-	mnode = nodelist.shift()
+	mnode = lnode = nodelist.shift()
 
+	outlist.push(snode);
 	while(nodelist.length){
-		console.log('dropNodeCullWhile')
-		outlist.push(snode);
 		lnode = nodelist.shift();
 		testpoints = collidePoints(snode,lnode)
 		hit = false;
 		for (var i = 0; i < testpoints.length; i++) {
-			console.log('dropNodeCullfor')
 			tx = testpoints[i].x
 			ty = testpoints[i].y
 			if (!goodNode(tx,ty)){
@@ -48,10 +45,10 @@ function dropNodeCull (nodelist, goodNode) {
 		};
 		if(hit){
 			snode = mnode
+			outlist.push(snode);
 		}
 		mnode = lnode;
 	}
-	outlist.push(snode);
 	outlist.push(lnode)
 	return outlist
 }

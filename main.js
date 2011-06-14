@@ -11,7 +11,7 @@ window.requestAnimFrame = (function(){
 
 var start, goal, path = [];
 
-var can , ctx, map, pather;
+var can , ctx, map, pather, lasttime;
 var drawmode = false;
 var doLosslessCull = false;
 var doDropNodeCull = false;
@@ -22,12 +22,11 @@ function init () {
 	can.height = window.innerHeight-16
 	document.body.appendChild(can);
 	ctx = can.getContext('2d');
-
+	lasttime = Date.now()
 	can.addEventListener('click',clicky,false);
 	//window.addEventListener('keydown',handleKey,false)
 
 	map = new Map(140,80)
-	pather = new PathFinder({adj:diag_adj})
 
 	var gui = new DAT.GUI();
 
@@ -49,6 +48,10 @@ function init () {
 	gui.add(window, 'doLosslessCullNow')
 	gui.add(window, 'doDropNodeCullNow')
 
+	ax = 2
+	ay = 2
+	dude = new Agent(GRID_SIZE*ax,GRID_SIZE*ay)
+
 
 	// Fires a function called 'explode'
 	// gui.add(fizzyText, 'explode').name('Explode!'); // Specify a custom name.
@@ -58,43 +61,9 @@ function init () {
 
 
 	tempmap = Generator.generate(21,21)
+	map.applyTemplete(tempmap,1)
 
-
-	for (var i = 0; i < tempmap.length; i++) {
-		for (var j = 0; j < tempmap[i].length; j++) {
-			if (tempmap[i][j].type == PERIMETER){
-				map.nodeAt(i*2,j*2).walkable = false
-				map.nodeAt(i*2+1,j*2).walkable = false
-				map.nodeAt(i*2,j*2+1).walkable = false
-				map.nodeAt(i*2+1,j*2+1).walkable = false
-
-			}else if(tempmap[i][j].type == ROOM){
-				map.nodeAt(i*2,j*2).walkable = true
-				map.nodeAt(i*2,j*2+1).walkable = true
-				map.nodeAt(i*2+1,j*2).walkable = true
-				map.nodeAt(i*2+1,j*2+1).walkable = true
-
-			}else if(tempmap[i][j].type == CORRIDOR){
-				map.nodeAt(i*2,j*2).walkable = true
-				map.nodeAt(i*2,j*2+1).walkable = true
-				map.nodeAt(i*2+1,j*2).walkable = true
-				map.nodeAt(i*2+1,j*2+1).walkable = true
-
-			}else if(tempmap[i][j].type == ENTRANCE){
-				map.nodeAt(i*2,j*2).walkable = true
-				map.nodeAt(i*2,j*2+1).walkable = true
-				map.nodeAt(i*2+1,j*2).walkable = true
-				map.nodeAt(i*2+1,j*2+1).walkable = true
-
-			}else{
-				map.nodeAt(i*2,j*2).walkable = true
-				map.nodeAt(i*2,j*2+1).walkable = true
-				map.nodeAt(i*2+1,j*2).walkable = true
-				map.nodeAt(i*2+1,j*2+1).walkable = true
-			}
-			
-		};
-	};
+	
 	//map.randomiz()
 
 	loopsy()
@@ -112,7 +81,6 @@ var clicky = function(e){
 		if(start){
 			console.time('wooo')
 			path = pather.findpath(start, goal)
-			console.log(path)
 			console.timeEnd('wooo')
 			if (doDropNodeCull){
 				path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable})
@@ -120,6 +88,7 @@ var clicky = function(e){
 			if (doLosslessCull){
 				path = losslessCull(path)
 			}
+			dude.followPath(path)
 		}
 	}
 }
@@ -133,23 +102,31 @@ function handleKey(e){
 	}
 }
 
-var loopsy = function(){
-	map.draw(ctx);
+
+pather = new PathFinder({adj:stra_adj})
+pather.drawClist = function(ctx){
+	ctx.save();
 	ctx.strokeStyle = 'pink';
 	ctx.lineWidth = 5.0;
-	ctx.lineCap = 'round'
+	ctx.lineCap = 'round';
 	ctx.beginPath();
-	for (var i = 0; i < pather.lastclist.length; i++) {
-		var a = pather.lastclist[i].node
-		var b = pather.lastclist[i].parent
+	for (var i = 0; i < this.lastclist.length; i++) {
+		var a = this.lastclist[i].node;
+		var b = this.lastclist[i].parent;
 		if(b){
 			b = b.node;
 			ctx.moveTo((a.x+0.5)*GRID_SIZE,(a.y+0.5)*GRID_SIZE);
 			ctx.lineTo((b.x+0.5)*GRID_SIZE,(b.y+0.5)*GRID_SIZE);
 		}
 	};
-	ctx.stroke()
+	ctx.stroke();
+	ctx.restore();
+}
+function drawPath(ctx,path){
+	ctx.save()
 	ctx.strokeStyle = 'green';
+	ctx.lineWidth = 5.0;
+	ctx.lineCap = 'round';
 	ctx.beginPath();
 	if(path.length)
 		ctx.moveTo((path[0].x+0.5)*GRID_SIZE,(path[0].y+0.5)*GRID_SIZE)
@@ -159,6 +136,23 @@ var loopsy = function(){
 		ctx.lineTo((path[i].x+0.5)*GRID_SIZE,(path[i].y+0.5)*GRID_SIZE)
 	};
 	ctx.stroke()
+	ctx.restore()
+}
+
+var loopsy = function(){
+	time = Date.now();
+	delta = time - lasttime;
+	lasttime = time;
+
+	map.draw(ctx);
+	pather.drawClist(ctx)
+	drawPath(ctx,path)
+	ctx.save()
+	ctx.translate(dude.pos.x, dude.pos.y)
+	dude.update(delta)
+	dude.draw(ctx)
+	ctx.restore()
+
 	requestAnimFrame(loopsy)
 }
 

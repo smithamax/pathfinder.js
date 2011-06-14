@@ -28,7 +28,6 @@ function blinePoints(a,b) {
 
 
 function collidePoints (a,b){
-	console.log(a.x,a.y,b.x,b.y)
 	var dx = Math.abs(b.x - a.x);
 	var dy = Math.abs(b.y - a.y);
 	var sx = a.x < b.x ? 1 : -1;
@@ -38,7 +37,6 @@ function collidePoints (a,b){
 	var y = a.y;
 	var outlist = [];
 	while(true){
-		console.log(a,b,'collidePointsLoop')
 		outlist.push({x:x,y:y});
 		if(x == b.x && y == b.y){
 			break;

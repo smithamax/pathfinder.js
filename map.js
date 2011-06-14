@@ -64,6 +64,40 @@ function Map(w,h) {
 			}
 		}
 	};
+	this.applyTemplete = function(temp,scale) {
+		for (var i = 0; i < temp.length; i++) {
+			for (var j = 0; j < temp[i].length; j++) {
+				if (temp[i][j].type == PERIMETER){
+					this.applyTempTile(i,j,false,scale)
+
+				}else if(temp[i][j].type == ROOM){
+					this.applyTempTile(i,j,true,scale)
+
+				}else if(temp[i][j].type == CORRIDOR){
+					this.applyTempTile(i,j,true,scale)
+
+				}else if(temp[i][j].type == ENTRANCE){
+					this.applyTempTile(i,j,true,scale)
+
+				}else{
+					this.applyTempTile(i,j,true,scale)
+				}
+				
+			};
+		};
+	};
+	this.applyTempTile = function(x,y,walkable,scale) {
+		walkable = walkable || false;
+		scale = scale || 1;
+		var tx, ty;
+		for (var i = 0; i < scale; i++) {
+			for (var j = 0; j < scale; j++) {
+				tx = x*scale+i;
+				ty = y*scale+j;
+				this.nodeAt(tx,ty).walkable = walkable
+			};
+		};
+	};
 
 }
 
