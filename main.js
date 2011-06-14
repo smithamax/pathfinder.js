@@ -14,7 +14,7 @@ var start, goal, path = [];
 var can , ctx, map, pather, lasttime;
 var editmode = false;
 var doLosslessCull = false;
-var doDropNodeCull = false;
+var doDropNodeCull = true;
 var showPaths = false;
 
 function init () {
@@ -30,7 +30,7 @@ function init () {
 	map = new Map(140,80)
 
 	var gui = new DAT.GUI();
-	
+
 	// Text field
 	// gui.add(fizzyText, 'message');
 
