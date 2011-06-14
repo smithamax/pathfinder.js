@@ -12,9 +12,10 @@ window.requestAnimFrame = (function(){
 var start, goal, path = [];
 
 var can , ctx, map, pather, lasttime;
-var drawmode = false;
+var editmode = false;
 var doLosslessCull = false;
 var doDropNodeCull = false;
+var showPaths = false;
 
 function init () {
 	can = document.createElement('canvas');
@@ -41,7 +42,8 @@ function init () {
 	// gui.add(fizzyText, 'noiseStrength', 10, 100, 5);
 
 	// Boolean checkbox
-	gui.add(window, 'drawmode');
+	gui.add(window, 'editmode');
+	gui.add(window, 'showPaths');
 	gui.add(window, 'doLosslessCull');
 	gui.add(window, 'doDropNodeCull');
 
@@ -61,7 +63,7 @@ function init () {
 
 
 	tempmap = Generator.generate(21,21)
-	map.applyTemplete(tempmap,1)
+	map.applyTemplete(tempmap,2)
 
 	
 	//map.randomiz()
@@ -75,7 +77,7 @@ var clicky = function(e){
 	var cy = Math.floor(e.clientY/GRID_SIZE)
 	var ax = Math.round(dude.pos.x/GRID_SIZE)
 	var ay = Math.round(dude.pos.y/GRID_SIZE)
-	if(drawmode){
+	if(editmode){
 		map.nodeAt(cx,cy).toggle();
 	}else{
 		//start = goal;
@@ -101,7 +103,7 @@ function handleKey(e){
 	keynum = e.which;
 
 	if(keyname[keynum] == "SPACE"){
-		//drawmode = !drawmode
+		//editmode = !editmode
 	}
 }
 
@@ -148,8 +150,12 @@ var loopsy = function(){
 	lasttime = time;
 
 	map.draw(ctx);
-	pather.drawClist(ctx)
-	drawPath(ctx,path)
+
+	if(showPaths){
+		pather.drawClist(ctx)
+		drawPath(ctx,path)
+	}
+
 	ctx.save()
 	ctx.translate(dude.pos.x, dude.pos.y)
 	dude.update(delta)
