@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Path Finding A*</title>
+	<link rel="stylesheet" type="text/css" href="reset.css" />
+	<meta name="description" content="">
+	<meta name="author" content="Dominic Smith">
+</head>
+<body>
+<script src="generator.js"></script>
+<script> 
+
+map = Generator.generate(21,21)
+
+can = document.createElement('canvas');
+can.width = window.innerWidth
+can.height = window.innerHeight-16
+document.body.appendChild(can);
+ctx = can.getContext('2d');
+
+GRID_SIZE = 20;
+
+draw = function(ctx, x, y, color) {
+	ctx.fillStyle = color;
+	ctx.fillRect(x*GRID_SIZE,y*GRID_SIZE,GRID_SIZE,GRID_SIZE);
+};
+
+for (var i = 0; i < map.length; i++) {
+	// for (var j = 0; j < map[i].length; j++) {
+	// 	if (map[i][j].type == PERIMETER){
+	// 		draw(ctx,i,j,'darkred')
+	// 	}else if(map[i][j].type == ROOM){
+	// 		draw(ctx,i,j,'lime')
+	// 	}else if(map[i][j].type == CORRIDOR){
+	// 		draw(ctx,i,j,'pink')
+	// 	}else if(map[i][j].type == ENTRANCE){
+	// 		draw(ctx,i,j,'yellow')
+	// 	}else{
+	// 		draw(ctx,i,j,'black')
+	// 	}
+		
+	// };
+	for (var j = 0; j < map[i].length; j++) {
+		if (map[i][j].type == PERIMETER){
+			draw(ctx,i,j,'black')
+		}else if(map[i][j].type == ROOM){
+			draw(ctx,i,j,'white')
+		}else if(map[i][j].type == CORRIDOR){
+			draw(ctx,i,j,'white')
+		}else if(map[i][j].type == ENTRANCE){
+			draw(ctx,i,j,'white')
+		}else{
+			draw(ctx,i,j,'white')
+		}
+		
+	};
+};
+
+</script>
+
+</body>
+</html>
