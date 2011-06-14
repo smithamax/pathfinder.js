@@ -15,7 +15,7 @@ var can , ctx, map, pather, lasttime;
 var editmode = false;
 var doLosslessCull = false;
 var doDropNodeCull = true;
-var showPaths = false;
+var showPaths = true;
 
 function init () {
 	can = document.createElement('canvas');
