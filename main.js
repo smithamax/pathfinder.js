@@ -30,7 +30,7 @@ function init () {
 	map = new Map(140,80)
 
 	var gui = new DAT.GUI();
-
+	
 	// Text field
 	// gui.add(fizzyText, 'message');
 
