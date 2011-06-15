@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2011 Dominic Smith.
+ * 
+ * Free to use under the MIT License.
+ * 
+ */
+
 function losslessCull(nodelist){
 	var outlist = [];
 	var node, lastnode, dx, dy, ldx, ldy;

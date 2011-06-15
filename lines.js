@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2011 Dominic Smith.
+ * 
+ * Free to use under the MIT License.
+ * 
+ */
+
 function blinePoints(a,b) {
 	var dx = Math.abs(b.x - a.x);
 	var dy = Math.abs(b.y - a.y);

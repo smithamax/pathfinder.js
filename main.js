@@ -31,21 +31,13 @@ function init () {
 
 	var gui = new DAT.GUI();
 
-	// Text field
-	// gui.add(fizzyText, 'message');
-
-	// // Sliders with min + max
-	// gui.add(fizzyText, 'maxSize').min(0.5).max(7);
-	// gui.add(fizzyText, 'growthSpeed').min(0.01).max(1).step(0.05);
-	// gui.add(fizzyText, 'speed', 0.1, 2, 0.05); // shorthand for min/max/step
-
-	// gui.add(fizzyText, 'noiseStrength', 10, 100, 5);
-
-	// Boolean checkbox
+	
 	gui.add(window, 'editmode');
 	gui.add(window, 'showPaths');
 	gui.add(window, 'doLosslessCull');
 	gui.add(window, 'doDropNodeCull');
+
+	gui.add(window, 'toggleNeighbourMode')
 
 	gui.add(window, 'doLosslessCullNow')
 	gui.add(window, 'doDropNodeCullNow')
@@ -53,13 +45,6 @@ function init () {
 	ax = 2
 	ay = 2
 	dude = new Agent(GRID_SIZE*ax,GRID_SIZE*ay)
-
-
-	// Fires a function called 'explode'
-	// gui.add(fizzyText, 'explode').name('Explode!'); // Specify a custom name.
-
-	// // Alternatively, you can specify custom labels using object syntax
-	//gui.add(obj, 'propertyName').options({'Small': 1, 'Medium': 2, 'Large': 3});
 
 
 	tempmap = Generator.generate(21,21)
@@ -107,7 +92,7 @@ function handleKey(e){
 	}
 }
 
-
+adjFlippy = true;
 pather = new PathFinder({adj:stra_adj})
 pather.drawClist = function(ctx){
 	ctx.save();
@@ -169,8 +154,18 @@ function doLosslessCullNow () {
 	path = losslessCull(path);
 }
 function doDropNodeCullNow (){
-	path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable})
+	path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable});
 }
+function toggleNeighbourMode(){
+	if(adjFlippy){
+		pather.adjFunc = diag_adj;
+	}else{
+		pather.adjFunc = stra_adj;
+	}
+	adjFlippy = !adjFlippy;
+}
+
+
 window.onload = init;
 
 var keyname = {

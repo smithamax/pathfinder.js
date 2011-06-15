@@ -1,14 +1,15 @@
-//function Node(){
-//	this.distance = function(node){};	//return number
-//	this.ajacent = function() {}; // return ajacent walkable nodes
-//}
+/**
+ * Copyright (c) 2011 Dominic Smith.
+ * 
+ * Free to use under the MIT License.
+ * 
+ */
 
 function PathFinder(options){
-	this.adjFunc;
 	this.lastclist = [];
 
 	if(options.adj){
-		this.adjFunc = options.adj
+		this.adjFunc = options.adj;
 	}else{
 		this.adjFunc = function(node){return node.ajacent();};
 	}
