@@ -5,113 +5,126 @@
  * 
  */
 
-function PathFinder(options){
-	this.lastclist = [];
+/*jshint browser: true, white: true */
 
-	if(options.adj){
-		this.adjFunc = options.adj;
-	}else{
-		this.adjFunc = function(node){return node.ajacent();};
-	}
+window.PathFinder = (function () {
 
-	var PathNode = function(node, parent){
-		this._g = null;
-		this.parent = parent;
-		this.node = node;
+	var PathFinder = function (options) {
+		this.lastclist = [];
+
+		this.edges = options.edges ||
+			function (node) {
+				return node.ajacent();
+			};
+
+		this.cost = options.cost ||
+			function (nodea, nodeb) {
+				return nodea.distance(nodeb);
+			};
+		this.heuristic = options.heuristic || this.cost;
 	};
 
-	PathNode.prototype = {
-		F: function(goal){
-			return this.G() + this.H(goal);
-		},
 
-		G: function(){
-			// if no cached value generate new one
-			if(!this._g) {
-				if (this.parent === undefined){
-					this._g = 0;
-				}else{
-					this._g = this.parent.G() + this.node.distance(this.parent.node);
-				}
-			}
-			return this._g;
-		},
-
-		H: function(goal){
-			return this.node.distance(goal);
-		},
-
-		path: function(){
-			if (this.parent === undefined){
-				return [this.node];
-			}else{
-				var path = this.parent.path();
-				path.push(this.node);
-				return path;
-			}
-		},
-		
-		reParent: function(parent){
-			this.parent = parent;
-			//clear cached value
-			this._g = null;
-		}
-	};
-
-	this.findpath = function(start, goal){
-		var adj, openlist = [];
+	PathFinder.prototype.findpath = function (start, goal) {
+		var adj, current, openlist = [];
 		var closedlist = this.lastclist = [];
-		var current = new PathNode(start);
+		var self = this;
 
-		
-		var nOpen = function(node){
+		var PathNode = function (node, parent) {
+			this._g = null;
+			this.parent = parent;
+			this.node = node;
+		};
+
+		PathNode.prototype = {
+			F: function (goal) {
+				return this.G() + this.H(goal);
+			},
+
+			G: function () {
+				// if no cached value generate new one
+				if (!this._g) {
+					if (this.parent === undefined) {
+						this._g = 0;
+					} else {
+						this._g = this.parent.G() + self.cost(this.node, this.parent.node);
+					}
+				}
+				return this._g;
+			},
+
+			H: function (goal) {
+				return self.cost(this.node, goal);
+			},
+
+			path: function () {
+				if (this.parent === undefined) {
+					return [this.node];
+				} else {
+					var path = this.parent.path();
+					path.push(this.node);
+					return path;
+				}
+			},
+
+			reParent: function (parent) {
+				this.parent = parent;
+				//clear cached value
+				this._g = null;
+			}
+		};
+
+		var nOpen = function (node) {
 			openlist.push(node);
 		};
 
-		var nNext = function(){
-			var best = {F : function(){return Number.MAX_VALUE;}};
+		var nNext = function () {
+			var best = {
+				F : function () {
+					return Number.MAX_VALUE;
+				}
+			};
+
 			for (var i = 0; i < openlist.length; i++) {
-				if(openlist[i].F(goal) < best.F(goal)){
+				if (openlist[i].F(goal) < best.F(goal)) {
 					best = openlist[i];
 				}
 			}
 			return best;
 		};
 
-		var nClose = function(node){
+		var nClose = function (node) {
 			closedlist.push(node);
 			var i = openlist.indexOf(node);
-			openlist.splice(i,1);
+			openlist.splice(i, 1);
 		};
 
-		var inList = function(ent, i, ary) {
+		var inList = function (ent, i, ary) {
 			return this == ent.node;
 		};
 
-
-		
-
+		current = new PathNode(start);
 		nOpen(current);
 
-		do{
+		do {
 			nClose(current);
-			adj = this.adjFunc(current.node);
+			adj = this.edges(current.node);
 
-			for(var n in adj){
-				if(!closedlist.some(inList,adj[n])){
-					
-					var oents = openlist.filter(inList,adj[n]);
-					
-					if(oents.length > 0){
-						
+			for (var n in adj) {
+				if (!closedlist.some(inList, adj[n])) {
+
+					var oents = openlist.filter(inList, adj[n]);
+
+					if (oents.length > 0) {
+
 						var old = oents[0];
 						var nuw = new PathNode(adj[n], current);
-						
-						if(old.G() > nuw.G()){
+
+						if (old.G() > nuw.G()) {
 							old.reParent(current);
 						}
 
-					}else{
+					} else {
 
 						nOpen(new PathNode(adj[n], current));
 
@@ -119,14 +132,17 @@ function PathFinder(options){
 				}
 			}
 
-			if (closedlist.some(inList, goal)){
-				return closedlist.filter(inList,goal)[0].path();
+			if (closedlist.some(inList, goal)) {
+				return closedlist.filter(inList, goal)[0].path();
 			}
 
 			current = nNext();
 
-		}while(openlist.length > 0);
+		} while (openlist.length > 0);
 
 		return false;
 	};
-}
+
+	return PathFinder;
+})();
+

@@ -93,7 +93,7 @@ function handleKey(e){
 }
 
 adjFlippy = true;
-pather = new PathFinder({adj:stra_adj})
+pather = new PathFinder({edges:stra_adj})
 pather.drawClist = function(ctx){
 	ctx.save();
 	ctx.strokeStyle = 'pink';
@@ -158,9 +158,9 @@ function doDropNodeCullNow (){
 }
 function toggleNeighbourMode(){
 	if(adjFlippy){
-		pather.adjFunc = diag_adj;
+		pather.edges = diag_adj;
 	}else{
-		pather.adjFunc = stra_adj;
+		pather.edges = stra_adj;
 	}
 	adjFlippy = !adjFlippy;
 }
