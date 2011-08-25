@@ -8,8 +8,11 @@
 /*jshint browser: true, white: true */
 
 window.PathFinder = (function () {
+	var finder;
 
 	var PathFinder = function (options) {
+		finder = this;
+
 		this.lastclist = [];
 
 		this.edges = options.edges ||
@@ -24,55 +27,55 @@ window.PathFinder = (function () {
 		this.heuristic = options.heuristic || this.cost;
 	};
 
+	var PathNode = function (node, parent) {
+		this._g = null;
+		this.parent = parent;
+		this.node = node;
+	};
+
+	PathNode.prototype = {
+		F: function (goal) {
+			return this.G() + this.H(goal);
+		},
+
+		G: function () {
+			// if no cached value generate new one
+			if (!this._g) {
+				if (this.parent === undefined) {
+					this._g = 0;
+				} else {
+					this._g = this.parent.G() + finder.cost(this.node, this.parent.node);
+				}
+			}
+			return this._g;
+		},
+
+		H: function (goal) {
+			return finder.heuristic(this.node, goal);
+		},
+
+		path: function () {
+			if (this.parent === undefined) {
+				return [this.node];
+			} else {
+				var path = this.parent.path();
+				path.push(this.node);
+				return path;
+			}
+		},
+
+		reParent: function (parent) {
+			this.parent = parent;
+			//clear cached value
+			this._g = null;
+		}
+	};
+
 
 	PathFinder.prototype.findpath = function (start, goal) {
 		var adj, current, openlist = [];
 		var closedlist = this.lastclist = [];
-		var self = this;
-
-		var PathNode = function (node, parent) {
-			this._g = null;
-			this.parent = parent;
-			this.node = node;
-		};
-
-		PathNode.prototype = {
-			F: function (goal) {
-				return this.G() + this.H(goal);
-			},
-
-			G: function () {
-				// if no cached value generate new one
-				if (!this._g) {
-					if (this.parent === undefined) {
-						this._g = 0;
-					} else {
-						this._g = this.parent.G() + self.cost(this.node, this.parent.node);
-					}
-				}
-				return this._g;
-			},
-
-			H: function (goal) {
-				return self.cost(this.node, goal);
-			},
-
-			path: function () {
-				if (this.parent === undefined) {
-					return [this.node];
-				} else {
-					var path = this.parent.path();
-					path.push(this.node);
-					return path;
-				}
-			},
-
-			reParent: function (parent) {
-				this.parent = parent;
-				//clear cached value
-				this._g = null;
-			}
-		};
+		finder = this;
 
 		var nOpen = function (node) {
 			openlist.push(node);
