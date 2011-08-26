@@ -19,14 +19,16 @@ API
   This will be used to get the H value if no heuristic function is given.
 * heuristic: like cost but used for none ajacent nodes.
 
-    var finder = new Pathfinder({
-        edges: function (node) {
-            return node.neighbours();
-        },
-        cost: function (nodea, nodeb) {
-            return nodea.distance(nodeb);
-        }
-    });
+```
+var finder = new Pathfinder({
+    edges: function (node) {
+        return node.neighbours();
+    },
+    cost: function (nodea, nodeb) {
+        return nodea.distance(nodeb);
+    }
+});
+```
     
 if no edges function is provided Pathfinder will try calling node.ajacent();
 if no cost function is provided Pathfinder will try calling node.distance();
