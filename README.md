@@ -1,7 +1,39 @@
 Pathfinding.js
 ==============
 
-pathfinding.js implements a simple A* pathfinding algorithm
+pathfinding.js implements a simple A* pathfinding algorithm.
+
+This code needs a clean up badly, however the pathfinder.js file itself is fairly well structured.
+
+API
+---
+
+###Pathfinder([options]);
+
+    var finder = new Pathfinder();
+
+#### options
+
+* edges: a function that when passed a graph node returns its edges;
+* cost: a function when passed two nodes returns the cost of moving from the first to the second. 
+  This will be used to get the H value if no heuristic function is given.
+* heuristic: like cost but used for none ajacent nodes.
+
+    var finder = new Pathfinder({
+        edges: function (node) {
+            return node.neighbours();
+        },
+        cost: function (nodea, nodeb) {
+            return nodea.distance(nodeb);
+        }
+    });
+    
+if no edges function is provided Pathfinder will try calling node.ajacent();
+if no cost function is provided Pathfinder will try calling node.distance();
+
+###Pathfinder#findpath(startnode, goalnode);
+
+    var path = finder.findPath(currentNode, goal);
 
 
 Example
