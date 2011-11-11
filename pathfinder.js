@@ -33,6 +33,7 @@ window.PathFinder = (function () {
 
 	var PathNode = function (node, parent) {
 		this._g = null;
+		this._h = null;
 		this.parent = parent;
 		this.node = node;
 	};
@@ -55,7 +56,10 @@ window.PathFinder = (function () {
 		},
 
 		H: function (goal) {
-			return finder.heuristic(this.node, goal);
+			if (!this._h){
+				this._h = finder.heuristic(this.node, goal);
+			}
+			return this._h;
 		},
 
 		path: function () {
@@ -87,8 +91,8 @@ window.PathFinder = (function () {
 		};
 
 		for (var i = 0; i < finder.openlist.length; i++) {
-			if (finder.openlist[i].F(finder.goal) < best.F(finder.goal)) {
-				best = finder.openlist[i];
+			if (finder.openlist[i].F(finder.goal) <= best.F(finder.goal)) {
+					best = finder.openlist[i];
 			}
 		}
 		return best;

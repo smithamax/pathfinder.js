@@ -35,9 +35,15 @@ function init () {
 	var thing = {Pather:null}
 	var options = {
 		"Ajacent Neighbors": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
-		"evil": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
+		"evil": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)+1}}),
 		"evil2": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return 0}}),
-		"Diaginal Neighbors":new PathFinder({edges:diag_adj}),
+		"Diaginal Neighbors":new PathFinder({edges:diag_adj,heuristic: function (a,b) {
+			var dx = Math.abs(a.x-b.x);
+			var dy = Math.abs(a.y-b.y);
+			var diag = Math.sqrt(2)*Math.min(dx,dy);
+			var shor = Math.abs(dx-dy);
+			return  diag + shor;
+		}}),
 		"shitty Neighbors": new PathFinder({edges:stra_adj}),
 	}
 
