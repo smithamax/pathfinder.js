@@ -56,7 +56,7 @@ window.PathFinder = (function () {
 		},
 
 		H: function (goal) {
-			if (!this._h){
+			if (!this._h) {
 				this._h = finder.heuristic(this.node, goal);
 			}
 			return this._h;
@@ -92,7 +92,7 @@ window.PathFinder = (function () {
 
 		for (var i = 0; i < finder.openlist.length; i++) {
 			if (finder.openlist[i].F(finder.goal) <= best.F(finder.goal)) {
-					best = finder.openlist[i];
+				best = finder.openlist[i];
 			}
 		}
 		return best;
@@ -112,7 +112,6 @@ window.PathFinder = (function () {
 		finder = this;
 		this.closedlist = [];
 		this.openlist = [];
-		this.pathNodes = {};
 		this.currentNode = new PathNode(start);
 		this.done = false;
 		this.goal = goal;
@@ -152,14 +151,12 @@ window.PathFinder = (function () {
 		if (this.closedlist.some(inList, this.goal)) {
 			this.done = true;
 			return this.closedlist.filter(inList, this.goal)[0].path();
-		}else{
+		} else {
 			this.currentNode = nNext();
 		}
-		if(this.openlist.length == 0){
-			this.done = true
+		if (this.openlist.length === 0) {
+			this.done = true;
 		}
-
-		
 	};
 
 
@@ -168,14 +165,15 @@ window.PathFinder = (function () {
 		var callback = doneCallback || function () {};
 		var self = this;
 		(function loopsy() {
-			var c = 0
+			var c = 0;
 			var result;
-			while (c++ < 20 && !self.done)
+			while (c++ < 20 && !self.done) {
 				result = self.step();
-			if (self.done){
-				callback(result ? result.slice(0) : false)
-			}else{
-				window.setTimeout(loopsy,1);
+			}
+			if (self.done) {
+				callback(result ? result.slice(0) : false);
+			} else {
+				window.setTimeout(loopsy, 1);
 			}
 		})();
 	};
