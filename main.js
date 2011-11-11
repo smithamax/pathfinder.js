@@ -11,11 +11,13 @@ window.requestAnimFrame = (function(){
 
 var start, goal, path = [];
 
-var can , ctx, map, pather, lasttime;
+var can , ctx, pather, map, lasttime;
 var editmode = false;
 var doLosslessCull = false;
 var doDropNodeCull = true;
 var showPaths = true;
+
+
 
 function init () {
 	can = document.createElement('canvas');
@@ -29,8 +31,17 @@ function init () {
 
 	map = new Map(140,80)
 
-	var gui = new DAT.GUI();
+	var gui = new dat.GUI();
+	var thing = {Pather:null}
+	var options = {
+		"Ajacent Neighbors": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
+		"evil": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
+		"evil2": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return 0}}),
+		"Diaginal Neighbors":new PathFinder({edges:diag_adj}),
+		"shitty Neighbors": new PathFinder({edges:stra_adj}),
+	}
 
+	pather = options["Ajacent Neighbors"];
 	
 	gui.add(window, 'editmode');
 	gui.add(window, 'showPaths');
@@ -38,6 +49,10 @@ function init () {
 	gui.add(window, 'doDropNodeCull');
 
 	gui.add(window, 'toggleNeighbourMode')
+
+	gui.add(thing, 'Pather',Object.keys(options)).onChange(function (value) {
+		pather = options[value];
+	});
 
 	gui.add(window, 'doLosslessCullNow')
 	gui.add(window, 'doDropNodeCullNow')
@@ -64,21 +79,24 @@ var clicky = function(e){
 	var ay = Math.round(dude.pos.y/GRID_SIZE)
 	if(editmode){
 		map.nodeAt(cx,cy).toggle();
+		map.dirty = true;
 	}else{
 		//start = goal;
 		start = map.nodeAt(ax,ay)
 		goal = map.nodeAt(cx,cy)
 		if(start){
-			console.time('wooo')
-			path = pather.findpath(start, goal)
-			console.timeEnd('wooo')
-			if (doDropNodeCull){
-				path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable})
-			}
-			if (doLosslessCull){
-				path = losslessCull(path)
-			}
-			dude.followPath(path)
+			console.profile("label for profile");
+			pather.findpath(start, goal, function(newpath){
+				console.profileEnd();
+				path = newpath.slice(0);
+				if (doDropNodeCull){
+					path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable})
+				}
+				if (doLosslessCull){
+					path = losslessCull(path.slice(0))
+				}
+				dude.followPath(path.slice(0))
+			});
 		}
 	}
 }
@@ -93,16 +111,16 @@ function handleKey(e){
 }
 
 adjFlippy = true;
-pather = new PathFinder({edges:stra_adj})
-pather.drawClist = function(ctx){
+
+PathFinder.prototype.drawClist = function(ctx){
 	ctx.save();
 	ctx.strokeStyle = 'pink';
 	ctx.lineWidth = 5.0;
 	ctx.lineCap = 'round';
 	ctx.beginPath();
-	for (var i = 0; i < this.lastclist.length; i++) {
-		var a = this.lastclist[i].node;
-		var b = this.lastclist[i].parent;
+	for (var i = 0; i < this.closedlist.length; i++) {
+		var a = this.closedlist[i].node;
+		var b = this.closedlist[i].parent;
 		if(b){
 			b = b.node;
 			ctx.moveTo((a.x+0.5)*GRID_SIZE,(a.y+0.5)*GRID_SIZE);

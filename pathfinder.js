@@ -13,7 +13,8 @@ window.PathFinder = (function () {
 	var PathFinder = function (options) {
 		finder = this;
 
-		this.lastclist = [];
+		this.closedlist = [];
+		this.done = false;
 
 		this.edges = options.edges ||
 			function (node) {
@@ -25,6 +26,9 @@ window.PathFinder = (function () {
 				return nodea.distance(nodeb);
 			};
 		this.heuristic = options.heuristic || this.cost;
+		this.nodeHash = options.nodeHash || function (node) {
+			return node.x + "x" + node.y;
+		};
 	};
 
 	var PathNode = function (node, parent) {
@@ -71,79 +75,105 @@ window.PathFinder = (function () {
 		}
 	};
 
+	var nOpen = function (node) {
+		finder.openlist.push(node);
+	};
 
-	PathFinder.prototype.findpath = function (start, goal) {
-		var adj, current, openlist = [];
-		var closedlist = this.lastclist = [];
+	var nNext = function () {
+		var best = {
+			F : function () {
+				return Number.MAX_VALUE;
+			}
+		};
+
+		for (var i = 0; i < finder.openlist.length; i++) {
+			if (finder.openlist[i].F(finder.goal) < best.F(finder.goal)) {
+				best = finder.openlist[i];
+			}
+		}
+		return best;
+	};
+
+	var nClose = function (node) {
+		finder.closedlist.push(node);
+		var i = finder.openlist.indexOf(node);
+		finder.openlist.splice(i, 1);
+	};
+
+	var inList = function (ent, i, ary) {
+		return this === ent.node;
+	};
+
+	PathFinder.prototype.start = function (start, goal) {
+		finder = this;
+		this.closedlist = [];
+		this.openlist = [];
+		this.pathNodes = {};
+		this.currentNode = new PathNode(start);
+		this.done = false;
+		this.goal = goal;
+
+		nOpen(this.currentNode);
+	};
+
+	PathFinder.prototype.step = function () {
 		finder = this;
 
-		var nOpen = function (node) {
-			openlist.push(node);
-		};
+		nClose(this.currentNode);
 
-		var nNext = function () {
-			var best = {
-				F : function () {
-					return Number.MAX_VALUE;
-				}
-			};
+		var adj = this.edges(this.currentNode.node);
 
-			for (var i = 0; i < openlist.length; i++) {
-				if (openlist[i].F(goal) < best.F(goal)) {
-					best = openlist[i];
-				}
-			}
-			return best;
-		};
+		for (var n in adj) {
+			if (!this.closedlist.some(inList, adj[n])) {
 
-		var nClose = function (node) {
-			closedlist.push(node);
-			var i = openlist.indexOf(node);
-			openlist.splice(i, 1);
-		};
+				var oents = this.openlist.filter(inList, adj[n]);
 
-		var inList = function (ent, i, ary) {
-			return this == ent.node;
-		};
+				if (oents.length > 0) {
 
-		current = new PathNode(start);
-		nOpen(current);
+					var old = oents[0];
+					var nuw = new PathNode(adj[n], this.currentNode);
 
-		do {
-			nClose(current);
-			adj = this.edges(current.node);
-
-			for (var n in adj) {
-				if (!closedlist.some(inList, adj[n])) {
-
-					var oents = openlist.filter(inList, adj[n]);
-
-					if (oents.length > 0) {
-
-						var old = oents[0];
-						var nuw = new PathNode(adj[n], current);
-
-						if (old.G() > nuw.G()) {
-							old.reParent(current);
-						}
-
-					} else {
-
-						nOpen(new PathNode(adj[n], current));
-
+					if (old.G() > nuw.G()) {
+						old.reParent(this.currentNode);
 					}
+
+				} else {
+
+					nOpen(new PathNode(adj[n], this.currentNode));
+
 				}
 			}
+		}
 
-			if (closedlist.some(inList, goal)) {
-				return closedlist.filter(inList, goal)[0].path();
+		if (this.closedlist.some(inList, this.goal)) {
+			this.done = true;
+			return this.closedlist.filter(inList, this.goal)[0].path();
+		}else{
+			this.currentNode = nNext();
+		}
+		if(this.openlist.length == 0){
+			this.done = true
+		}
+
+		
+	};
+
+
+	PathFinder.prototype.findpath = function (start, goal, doneCallback) {
+		this.start(start, goal);
+		var callback = doneCallback || function () {};
+		var self = this;
+		(function loopsy() {
+			var c = 0
+			var result;
+			while (c++ < 20 && !self.done)
+				result = self.step();
+			if (self.done){
+				callback(result ? result.slice(0) : false)
+			}else{
+				window.setTimeout(loopsy,1);
 			}
-
-			current = nNext();
-
-		} while (openlist.length > 0);
-
-		return false;
+		})();
 	};
 
 	return PathFinder;

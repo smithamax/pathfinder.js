@@ -31,6 +31,11 @@ function Map(w,h) {
 	this.width = w = w || 10;
 	this.height = h = h || 10;
 	this.grid = [];
+	this.canvas = document.createElement('canvas');
+	this.canvas.width = w * GRID_SIZE;
+	this.canvas.height = h * GRID_SIZE;
+	this.ctx = this.canvas.getContext('2d');
+	this.dirty = true;
 
 	for (var i = 0; i < w; i++) {
 		this.grid[i] = [];
@@ -48,12 +53,17 @@ function Map(w,h) {
 		}
 	};
 
-	this.draw = function(ctx) {
-		for (var i = 0; i < this.grid.length; i++) {
-			for (var j = 0; j < this.grid[i].length; j++) {
-				this.grid[i][j].draw(ctx);
+	this.draw = function(_ctx) {
+		if (this.dirty){
+			for (var i = 0; i < this.grid.length; i++) {
+				for (var j = 0; j < this.grid[i].length; j++) {
+					this.grid[i][j].draw(this.ctx);
+				}
 			}
+			this.dirty = false;
 		}
+		_ctx.drawImage(this.canvas,0,0);
+		
 	};
 
 	this.randomiz = function() {
