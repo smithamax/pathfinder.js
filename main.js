@@ -48,8 +48,6 @@ function init () {
 	gui.add(window, 'doLosslessCull');
 	gui.add(window, 'doDropNodeCull');
 
-	gui.add(window, 'toggleNeighbourMode')
-
 	gui.add(thing, 'Pather',Object.keys(options)).onChange(function (value) {
 		pather = options[value];
 	});
@@ -85,9 +83,7 @@ var clicky = function(e){
 		start = map.nodeAt(ax,ay)
 		goal = map.nodeAt(cx,cy)
 		if(start){
-			console.profile("label for profile");
 			pather.findpath(start, goal, function(newpath){
-				console.profileEnd();
 				path = newpath.slice(0);
 				if (doDropNodeCull){
 					path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable})
@@ -110,7 +106,6 @@ function handleKey(e){
 	}
 }
 
-adjFlippy = true;
 
 PathFinder.prototype.drawClist = function(ctx){
 	ctx.save();
@@ -174,15 +169,6 @@ function doLosslessCullNow () {
 function doDropNodeCullNow (){
 	path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable});
 }
-function toggleNeighbourMode(){
-	if(adjFlippy){
-		pather.edges = diag_adj;
-	}else{
-		pather.edges = stra_adj;
-	}
-	adjFlippy = !adjFlippy;
-}
-
 
 window.onload = init;
 
