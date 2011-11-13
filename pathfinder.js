@@ -160,22 +160,31 @@ window.PathFinder = (function () {
 	};
 
 
-	PathFinder.prototype.findpath = function (start, goal, doneCallback) {
+	PathFinder.prototype.findpath = function (start, goal, callback) {
 		this.start(start, goal);
-		var callback = doneCallback || function () {};
 		var self = this;
-		(function loopsy() {
-			var c = 0;
+		if (callback) {
+			(function loopsy() {
+				var c = 0;
+				var result;
+				while (c++ < 20 && !self.done) {
+					result = self.step();
+				}
+				if (self.done) {
+					callback(result ? result.slice(0) : false);
+				} else {
+					window.setTimeout(loopsy, 1);
+				}
+			})();
+
+		} else {
 			var result;
-			while (c++ < 20 && !self.done) {
+			while (!this.done) {
 				result = self.step();
 			}
-			if (self.done) {
-				callback(result ? result.slice(0) : false);
-			} else {
-				window.setTimeout(loopsy, 1);
-			}
-		})();
+			return result ? result.slice(0) : false;
+		}
+
 	};
 
 	return PathFinder;

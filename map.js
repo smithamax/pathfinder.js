@@ -11,10 +11,6 @@ function Node(x,y){
 		return Math.sqrt(dx*dx + dy*dy);
 	};	//return number
 
-	this.walkable = function() {
-		return this.walkable;
-	};
-
 	this.toggle = function() {
 		this.walkable = !this.walkable;
 	};
@@ -23,6 +19,9 @@ function Node(x,y){
 		var bw = this.walkable ? 'white' : 'black';
 		ctx.fillStyle = color || bw;
 		ctx.fillRect(x*GRID_SIZE,y*GRID_SIZE,GRID_SIZE,GRID_SIZE);
+	};
+	this.toJSON = function () {
+		return 	this.walkable ? 1 : 0;
 	};
 
 }
