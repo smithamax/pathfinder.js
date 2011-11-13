@@ -190,15 +190,25 @@
         });
 
         var go = function () {
-            console.time("map go");
             var c = 0;
+            TEST = false;
+            console.time("map go");
             while (c++ < 100) {
                 pather.findpath(map[0][0],map[32][38])
             }
             console.timeEnd("map go")
+            console.log(pather.findpath(map[0][0],map[32][38]).length)
+            c = 0;
+            TEST = true;
+            console.time("new map go");
+            while (c++ < 100) {
+                pather.findpath(map[0][0],map[32][38])
+            }
+            console.timeEnd("new map go")
+            console.log(pather.findpath(map[0][0],map[32][38]).length)
         	
         };
-        go();
+        //go();
         
     </script>
 </body>

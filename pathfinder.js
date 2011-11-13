@@ -10,6 +10,12 @@
 window.PathFinder = (function () {
 	var finder;
 
+	var cc;
+
+	var order = function (a, b) {
+		return a.F() - b.F();
+	};
+
 	var PathFinder = function (options) {
 		finder = this;
 
@@ -57,7 +63,7 @@ window.PathFinder = (function () {
 
 		H: function (goal) {
 			if (!this._h) {
-				this._h = finder.heuristic(this.node, goal);
+				this._h = finder.heuristic(this.node, goal || finder.goal);
 			}
 			return this._h;
 		},
@@ -80,10 +86,23 @@ window.PathFinder = (function () {
 	};
 
 	var nOpen = function (node) {
+		if (TEST){
+			for (var i = 0; i < finder.openlist.length; i++) {
+				if (finder.openlist[i].F(finder.goal) >= node.F(finder.goal)) {
+					return finder.openlist.splice(i,0,node);
+				}
+			}
+
+		}
 		finder.openlist.push(node);
 	};
 
 	var nNext = function () {
+		cc++
+		if (TEST){
+			return finder.openlist[0];
+		}
+
 		var best = {
 			F : function () {
 				return Number.MAX_VALUE;
@@ -99,6 +118,9 @@ window.PathFinder = (function () {
 	};
 
 	var nClose = function (node) {
+		if(TEST){
+			finder.closednodelist[JSON.stringify(node.node)] = node;
+		}
 		finder.closedlist.push(node);
 		var i = finder.openlist.indexOf(node);
 		finder.openlist.splice(i, 1);
@@ -111,6 +133,7 @@ window.PathFinder = (function () {
 	PathFinder.prototype.start = function (start, goal) {
 		finder = this;
 		this.closedlist = [];
+		this.closednodelist = {};
 		this.openlist = [];
 		this.currentNode = new PathNode(start);
 		this.done = false;
@@ -127,23 +150,45 @@ window.PathFinder = (function () {
 		var adj = this.edges(this.currentNode.node);
 
 		for (var n in adj) {
-			if (!this.closedlist.some(inList, adj[n])) {
+			if(TEST){
+				if (!(this.closednodelist[JSON.stringify(adj[n])])) {
 
-				var oents = this.openlist.filter(inList, adj[n]);
+					var oents = this.openlist.filter(inList, adj[n]);
 
-				if (oents.length > 0) {
+					if (oents.length > 0) {
 
-					var old = oents[0];
-					var nuw = new PathNode(adj[n], this.currentNode);
+						var old = oents[0];
+						var nuw = new PathNode(adj[n], this.currentNode);
 
-					if (old.G() > nuw.G()) {
-						old.reParent(this.currentNode);
+						if (old.G() > nuw.G()) {
+							old.reParent(this.currentNode);
+						}
+
+					} else {
+
+						nOpen(new PathNode(adj[n], this.currentNode));
+
 					}
+				}
+			} else{
+				if (!this.closedlist.some(inList, adj[n])) {
 
-				} else {
+					var oents = this.openlist.filter(inList, adj[n]);
 
-					nOpen(new PathNode(adj[n], this.currentNode));
+					if (oents.length > 0) {
 
+						var old = oents[0];
+						var nuw = new PathNode(adj[n], this.currentNode);
+
+						if (old.G() > nuw.G()) {
+							old.reParent(this.currentNode);
+						}
+
+					} else {
+
+						nOpen(new PathNode(adj[n], this.currentNode));
+
+					}
 				}
 			}
 		}
@@ -161,6 +206,7 @@ window.PathFinder = (function () {
 
 
 	PathFinder.prototype.findpath = function (start, goal, callback) {
+		cc = 0;
 		this.start(start, goal);
 		var self = this;
 		if (callback) {
@@ -182,6 +228,7 @@ window.PathFinder = (function () {
 			while (!this.done) {
 				result = self.step();
 			}
+			console.log("count: ",cc)
 			return result ? result.slice(0) : false;
 		}
 
