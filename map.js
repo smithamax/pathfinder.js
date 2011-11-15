@@ -20,10 +20,6 @@ function Node(x,y){
 		ctx.fillStyle = color || bw;
 		ctx.fillRect(x*GRID_SIZE,y*GRID_SIZE,GRID_SIZE,GRID_SIZE);
 	};
-	this.toJSON = function () {
-		return 	this.walkable ? 1 : 0;
-	};
-
 }
 
 function Map(w,h) {

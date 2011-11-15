@@ -41,6 +41,7 @@ window.PathFinder = (function () {
 		this._g = null;
 		this._h = null;
 		this.parent = parent;
+		this.closed = false;
 		this.node = node;
 	};
 
@@ -86,54 +87,27 @@ window.PathFinder = (function () {
 	};
 
 	var nOpen = function (node) {
-		if (TEST){
-			for (var i = 0; i < finder.openlist.length; i++) {
-				if (finder.openlist[i].F(finder.goal) >= node.F(finder.goal)) {
-					return finder.openlist.splice(i,0,node);
-				}
+		finder.pathNodeIndex[JSON.stringify(node.node)] = node;
+		for (var i = 0; i < finder.openlist.length; i++) {
+			if (finder.openlist[i].F(finder.goal) >= node.F(finder.goal)) {
+				return finder.openlist.splice(i,0,node);
 			}
-
 		}
 		finder.openlist.push(node);
 	};
 
 	var nNext = function () {
 		cc++
-		if (TEST){
-			return finder.openlist[0];
-		}
-
-		var best = {
-			F : function () {
-				return Number.MAX_VALUE;
-			}
-		};
-
-		for (var i = 0; i < finder.openlist.length; i++) {
-			if (finder.openlist[i].F(finder.goal) <= best.F(finder.goal)) {
-				best = finder.openlist[i];
-			}
-		}
-		return best;
+		return finder.openlist.shift();
 	};
 
 	var nClose = function (node) {
-		if(TEST){
-			finder.closednodelist[JSON.stringify(node.node)] = node;
-		}
-		finder.closedlist.push(node);
-		var i = finder.openlist.indexOf(node);
-		finder.openlist.splice(i, 1);
-	};
-
-	var inList = function (ent, i, ary) {
-		return this === ent.node;
+		finder.pathNodeIndex[JSON.stringify(node.node)].closed = true;
 	};
 
 	PathFinder.prototype.start = function (start, goal) {
 		finder = this;
-		this.closedlist = [];
-		this.closednodelist = {};
+		this.pathNodeIndex = {};
 		this.openlist = [];
 		this.currentNode = new PathNode(start);
 		this.done = false;
@@ -148,54 +122,27 @@ window.PathFinder = (function () {
 		nClose(this.currentNode);
 
 		var adj = this.edges(this.currentNode.node);
+		var itnode;
 
 		for (var n in adj) {
-			if(TEST){
-				if (!(this.closednodelist[JSON.stringify(adj[n])])) {
 
-					var oents = this.openlist.filter(inList, adj[n]);
+			itnode = this.pathNodeIndex[JSON.stringify(adj[n])]
+			
+			if (itnode === undefined) {
+				nOpen(new PathNode(adj[n], this.currentNode));
 
-					if (oents.length > 0) {
+			} else if (!itnode.closed) {
+				var nuw = new PathNode(adj[n], this.currentNode);
 
-						var old = oents[0];
-						var nuw = new PathNode(adj[n], this.currentNode);
-
-						if (old.G() > nuw.G()) {
-							old.reParent(this.currentNode);
-						}
-
-					} else {
-
-						nOpen(new PathNode(adj[n], this.currentNode));
-
-					}
-				}
-			} else{
-				if (!this.closedlist.some(inList, adj[n])) {
-
-					var oents = this.openlist.filter(inList, adj[n]);
-
-					if (oents.length > 0) {
-
-						var old = oents[0];
-						var nuw = new PathNode(adj[n], this.currentNode);
-
-						if (old.G() > nuw.G()) {
-							old.reParent(this.currentNode);
-						}
-
-					} else {
-
-						nOpen(new PathNode(adj[n], this.currentNode));
-
-					}
+				if (itnode.G() > nuw.G()) {
+					itnode.reParent(this.currentNode);
 				}
 			}
 		}
-
-		if (this.closedlist.some(inList, this.goal)) {
+		var goalres = this.pathNodeIndex[JSON.stringify(this.goal)];
+		if (goalres !==  undefined && goalres.closed) {
 			this.done = true;
-			return this.closedlist.filter(inList, this.goal)[0].path();
+			return goalres.path();
 		} else {
 			this.currentNode = nNext();
 		}

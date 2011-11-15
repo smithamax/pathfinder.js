@@ -118,17 +118,22 @@ PathFinder.prototype.drawClist = function(ctx){
 	ctx.strokeStyle = 'pink';
 	ctx.lineWidth = 5.0;
 	ctx.lineCap = 'round';
-	ctx.beginPath();
-	for (var i = 0; i < this.closedlist.length; i++) {
-		var a = this.closedlist[i].node;
-		var b = this.closedlist[i].parent;
+	for (var key in this.pathNodeIndex) {
+		ctx.beginPath();
+		if(this.pathNodeIndex[key].closed){
+			ctx.strokeStyle = 'pink';
+		}else{
+			ctx.strokeStyle = 'skyblue';
+		}
+		var a = this.pathNodeIndex[key].node;
+		var b = this.pathNodeIndex[key].parent;
 		if(b){
 			b = b.node;
 			ctx.moveTo((a.x+0.5)*GRID_SIZE,(a.y+0.5)*GRID_SIZE);
 			ctx.lineTo((b.x+0.5)*GRID_SIZE,(b.y+0.5)*GRID_SIZE);
 		}
+		ctx.stroke();
 	};
-	ctx.stroke();
 	ctx.restore();
 }
 function drawPath(ctx,path){
