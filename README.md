@@ -1,7 +1,7 @@
-Pathfinding.js
+Pathfinder.js
 ==============
 
-pathfinding.js implements a simple A* pathfinding algorithm.
+pathfinder.js implements a simple A* pathfinding algorithm.
 
 This code needs a clean up badly, however the pathfinder.js file itself is fairly well structured.
 
