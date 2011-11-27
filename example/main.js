@@ -34,17 +34,17 @@ function init () {
 	var gui = new dat.GUI();
 	var thing = {Pather:null}
 	var options = {
-		"Ajacent Neighbors": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
-		"evil": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)+1}}),
-		"evil2": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return 0}}),
-		"Diaginal Neighbors":new PathFinder({edges:diag_adj,heuristic: function (a,b) {
+		"Ajacent Neighbors": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
+		"evil": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)+1}}),
+		"evil2": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return 0}}),
+		"Diaginal Neighbors":new Pathfinder({edges:diag_adj,heuristic: function (a,b) {
 			var dx = Math.abs(a.x-b.x);
 			var dy = Math.abs(a.y-b.y);
 			var diag = Math.sqrt(2)*Math.min(dx,dy);
 			var shor = Math.abs(dx-dy);
 			return  diag + shor;
 		}}),
-		"shitty Neighbors": new PathFinder({edges:stra_adj}),
+		"shitty Neighbors": new Pathfinder({edges:stra_adj}),
 	}
 
 	pather = options["Ajacent Neighbors"];
@@ -113,7 +113,7 @@ function handleKey(e){
 }
 
 
-PathFinder.prototype.drawClist = function(ctx){
+Pathfinder.prototype.drawClist = function(ctx){
 	ctx.save();
 	ctx.strokeStyle = 'pink';
 	ctx.lineWidth = 5.0;
