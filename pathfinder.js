@@ -20,7 +20,7 @@ var Pathfinder = (function () {
 
 		this.edges = options.edges ||
 			function (node) {
-				return node.ajacent();
+				return node.adjacent();
 			};
 
 		this.cost = options.cost ||

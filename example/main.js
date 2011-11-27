@@ -34,7 +34,7 @@ function init () {
 	var gui = new dat.GUI();
 	var thing = {Pather:null}
 	var options = {
-		"Ajacent Neighbors": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
+		"adjacent Neighbors": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)}}),
 		"evil": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)+1}}),
 		"evil2": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return 0}}),
 		"Diaginal Neighbors":new Pathfinder({edges:diag_adj,heuristic: function (a,b) {
@@ -47,7 +47,7 @@ function init () {
 		"shitty Neighbors": new Pathfinder({edges:stra_adj}),
 	}
 
-	pather = options["Ajacent Neighbors"];
+	pather = options["adjacent Neighbors"];
 	
 	gui.add(window, 'editmode');
 	gui.add(window, 'showPaths');
