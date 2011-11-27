@@ -53,7 +53,7 @@ or the async version.
 Example
 -------
 
-to use the example open [example/index.html](example/index.html) (preferably in chrome, though FF4 has been tested)
+to use the example open [example/index.html](http://smithamax.me/pathfinder.js/) (preferably in chrome, though FF4 has been tested)
 
 you may need to refresh to get an acceptable generated map.
 
