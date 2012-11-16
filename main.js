@@ -34,17 +34,17 @@ function init () {
 	var gui = new dat.GUI();
 	var thing = {Pather:null};
 	var options = {
-		"Ajacent Neighbors": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y);}}),
-		"evil": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)+1;}}),
-		"evil2": new PathFinder({edges:stra_adj,heuristic: function (a,b) {return 0;}}),
-		"Diaginal Neighbors":new PathFinder({edges:diag_adj,heuristic: function (a,b) {
+		"Ajacent Neighbors": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y);}}),
+		"evil": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return Math.abs(a.x-b.x) + Math.abs(a.y-b.y)+1;}}),
+		"evil2": new Pathfinder({edges:stra_adj,heuristic: function (a,b) {return 0;}}),
+		"Diaginal Neighbors":new Pathfinder({edges:diag_adj,heuristic: function (a,b) {
 			var dx = Math.abs(a.x-b.x);
 			var dy = Math.abs(a.y-b.y);
 			var diag = Math.sqrt(2)*Math.min(dx,dy);
 			var shor = Math.abs(dx-dy);
 			return  diag + shor;
 		}}),
-		"shitty Neighbors": new PathFinder({edges:stra_adj})
+		"shitty Neighbors": new Pathfinder({edges:stra_adj})
 	};
 
 	pather = options["Ajacent Neighbors"];
@@ -91,7 +91,7 @@ var clicky = function(e){
 		console.log(start, goal)
 		if (start) {
 			pather.findpath(start, goal, function(newpath){
-				console.log(newpath)
+				console.dir(newpath)
 				if (!newpath) return;
 				path = newpath.slice(0);
 				if (doDropNodeCull) {
@@ -103,6 +103,7 @@ var clicky = function(e){
 				dude.followPath(path.slice(0));
 			});
 		}
+		console.dir(path)
 	}
 };
 
@@ -116,7 +117,7 @@ function handleKey(e){
 }
 
 
-PathFinder.prototype.drawClist = function(ctx){
+Pathfinder.prototype.drawClist = function(ctx){
 	ctx.save();
 	ctx.strokeStyle = 'pink';
 	ctx.lineWidth = 5.0;
@@ -139,18 +140,19 @@ PathFinder.prototype.drawClist = function(ctx){
 	}
 	ctx.restore();
 };
-function drawPath(ctx,path){
+function drawPath(ctx,path) {
 	ctx.save();
 	ctx.strokeStyle = 'green';
 	ctx.lineWidth = 5.0;
 	ctx.lineCap = 'round';
 	ctx.beginPath();
-	if(path.length)
+	if (path.length) {
 		ctx.moveTo((path[0].x+0.5)*GRID_SIZE,(path[0].y+0.5)*GRID_SIZE);
-	for (var i = 0; i < path.length; i++) {
-		ctx.fillStyle = 'lime';
-		ctx.fillRect(path[i].x*GRID_SIZE,path[i].y*GRID_SIZE,GRID_SIZE,GRID_SIZE);
-		ctx.lineTo((path[i].x+0.5)*GRID_SIZE,(path[i].y+0.5)*GRID_SIZE);
+		for (var i = 0; i < path.length; i++) {
+			ctx.fillStyle = 'lime';
+			ctx.fillRect(path[i].x*GRID_SIZE,path[i].y*GRID_SIZE,GRID_SIZE,GRID_SIZE);
+			ctx.lineTo((path[i].x+0.5)*GRID_SIZE,(path[i].y+0.5)*GRID_SIZE);
+		}
 	}
 	ctx.stroke();
 	ctx.restore();

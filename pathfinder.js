@@ -5,18 +5,14 @@
  * 
  */
 
-/*jshint browser: true, white: true */
+/*jshint white: true */
+/*global exports: false, Pathfinder: true, setTimeout: false */
 
-window.PathFinder = (function () {
+var Pathfinder = (function () {
+
 	var finder;
 
-	var cc;
-
-	var order = function (a, b) {
-		return a.F() - b.F();
-	};
-
-	var PathFinder = function (options) {
+	var Pathfinder = function (options) {
 		finder = this;
 
 		this.closedlist = [];
@@ -24,7 +20,7 @@ window.PathFinder = (function () {
 
 		this.edges = options.edges ||
 			function (node) {
-				return node.ajacent();
+				return node.adjacent();
 			};
 
 		this.cost = options.cost ||
@@ -87,25 +83,24 @@ window.PathFinder = (function () {
 	};
 
 	var nOpen = function (node) {
-		finder.pathNodeIndex[JSON.stringify(node.node)] = node;
+		finder.pathNodeIndex[finder.nodeHash(node.node)] = node;
 		for (var i = 0; i < finder.openlist.length; i++) {
 			if (finder.openlist[i].F(finder.goal) >= node.F(finder.goal)) {
-				return finder.openlist.splice(i,0,node);
+				return finder.openlist.splice(i, 0, node);
 			}
 		}
 		finder.openlist.push(node);
 	};
 
 	var nNext = function () {
-		cc++
 		return finder.openlist.shift();
 	};
 
 	var nClose = function (node) {
-		finder.pathNodeIndex[JSON.stringify(node.node)].closed = true;
+		finder.pathNodeIndex[finder.nodeHash(node.node)].closed = true;
 	};
 
-	PathFinder.prototype.start = function (start, goal) {
+	Pathfinder.prototype.start = function (start, goal) {
 		finder = this;
 		this.pathNodeIndex = {};
 		this.openlist = [];
@@ -116,7 +111,7 @@ window.PathFinder = (function () {
 		nOpen(this.currentNode);
 	};
 
-	PathFinder.prototype.step = function () {
+	Pathfinder.prototype.step = function () {
 		finder = this;
 
 		nClose(this.currentNode);
@@ -126,8 +121,8 @@ window.PathFinder = (function () {
 
 		for (var n in adj) {
 
-			itnode = this.pathNodeIndex[JSON.stringify(adj[n])]
-			
+			itnode = this.pathNodeIndex[this.nodeHash(adj[n])];
+
 			if (itnode === undefined) {
 				nOpen(new PathNode(adj[n], this.currentNode));
 
@@ -139,7 +134,7 @@ window.PathFinder = (function () {
 				}
 			}
 		}
-		var goalres = this.pathNodeIndex[JSON.stringify(this.goal)];
+		var goalres = this.pathNodeIndex[this.nodeHash(this.goal)];
 		if (goalres !==  undefined && goalres.closed) {
 			this.done = true;
 			return goalres.path();
@@ -152,8 +147,7 @@ window.PathFinder = (function () {
 	};
 
 
-	PathFinder.prototype.findpath = function (start, goal, callback) {
-		cc = 0;
+	Pathfinder.prototype.findpath = function (start, goal, callback) {
 		this.start(start, goal);
 		var self = this;
 		if (callback) {
@@ -166,7 +160,7 @@ window.PathFinder = (function () {
 				if (self.done) {
 					callback(result ? result.slice(0) : false);
 				} else {
-					window.setTimeout(loopsy, 1);
+					setTimeout(loopsy, 1);
 				}
 			})();
 
@@ -175,12 +169,16 @@ window.PathFinder = (function () {
 			while (!this.done) {
 				result = self.step();
 			}
-			console.log("count: ",cc)
 			return result ? result.slice(0) : false;
 		}
 
 	};
 
-	return PathFinder;
+	return Pathfinder;
 })();
 
+
+// Make Node module, if possible.
+if (typeof exports == 'object' && exports) {
+    exports.Pathfinder = Pathfinder;
+}
