@@ -83,7 +83,7 @@ var Pathfinder = (function () {
 	};
 
 	var nOpen = function (node) {
-		finder.pathNodeIndex[JSON.stringify(node.node)] = node;
+		finder.pathNodeIndex[finder.nodeHash(node.node)] = node;
 		for (var i = 0; i < finder.openlist.length; i++) {
 			if (finder.openlist[i].F(finder.goal) >= node.F(finder.goal)) {
 				return finder.openlist.splice(i, 0, node);
@@ -97,7 +97,7 @@ var Pathfinder = (function () {
 	};
 
 	var nClose = function (node) {
-		finder.pathNodeIndex[JSON.stringify(node.node)].closed = true;
+		finder.pathNodeIndex[finder.nodeHash(node.node)].closed = true;
 	};
 
 	Pathfinder.prototype.start = function (start, goal) {
@@ -121,7 +121,7 @@ var Pathfinder = (function () {
 
 		for (var n in adj) {
 
-			itnode = this.pathNodeIndex[JSON.stringify(adj[n])];
+			itnode = this.pathNodeIndex[this.nodeHash(adj[n])];
 
 			if (itnode === undefined) {
 				nOpen(new PathNode(adj[n], this.currentNode));
@@ -134,7 +134,7 @@ var Pathfinder = (function () {
 				}
 			}
 		}
-		var goalres = this.pathNodeIndex[JSON.stringify(this.goal)];
+		var goalres = this.pathNodeIndex[this.nodeHash(this.goal)];
 		if (goalres !==  undefined && goalres.closed) {
 			this.done = true;
 			return goalres.path();
