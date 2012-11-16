@@ -88,10 +88,8 @@ var clicky = function(e){
 		//start = goal;
 		start = map.nodeAt(ax,ay);
 		goal = map.nodeAt(cx,cy);
-		console.log(start, goal)
 		if (start) {
 			pather.findpath(start, goal, function(newpath){
-				console.dir(newpath)
 				if (!newpath) return;
 				path = newpath.slice(0);
 				if (doDropNodeCull) {
@@ -103,7 +101,6 @@ var clicky = function(e){
 				dude.followPath(path.slice(0));
 			});
 		}
-		console.dir(path)
 	}
 };
 
