@@ -81,21 +81,23 @@ var clicky = function(e){
 	var cy = Math.floor(e.clientY/GRID_SIZE);
 	var ax = Math.round(dude.pos.x/GRID_SIZE);
 	var ay = Math.round(dude.pos.y/GRID_SIZE);
-	if(editmode){
+	if (editmode) {
 		map.nodeAt(cx,cy).toggle();
 		map.dirty = true;
-	}else{
+	} else {
 		//start = goal;
 		start = map.nodeAt(ax,ay);
 		goal = map.nodeAt(cx,cy);
-		if(start){
+		console.log(start, goal)
+		if (start) {
 			pather.findpath(start, goal, function(newpath){
-				if (!path) return;
+				console.log(newpath)
+				if (!newpath) return;
 				path = newpath.slice(0);
-				if (doDropNodeCull){
+				if (doDropNodeCull) {
 					path = dropNodeCull(path, function(x,y){return map.nodeAt(x,y).walkable;});
 				}
-				if (doLosslessCull){
+				if (doLosslessCull) {
 					path = losslessCull(path.slice(0));
 				}
 				dude.followPath(path.slice(0));
