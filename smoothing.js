@@ -31,6 +31,8 @@ function losslessCull(nodelist){
 
 function dropNodeCull (nodelist, goodNode) {
 	//nodelist = losslessCull(nodelist)
+	if (nodelist.length <= 2) return nodelist;
+
 	var outlist = [];
 	var snode, mnode, lnode, testpoints, hit;
 
